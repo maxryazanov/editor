@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML Editor by MARKONS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&display=swap" rel="stylesheet"> 
+</head>
+<body>
+    <div class="wrapper">
+        <h1 align="center">HTML Editor</h1>
+    
+        <div class="options">
+            <button id="boldButton" style="font-weight: 700;">B</button>
+            <button id="italicButton" style="font-style: italic;">italic</button>
+            <button id="underlineButton" style="text-decoration: underline;">U</button>
+            <select id="headingSelector">
+                <option value="p">Параграф</option>
+                <option value="h1">Заголовок 1</option>
+                <option value="h2">Заголовок 2</option>
+                <option value="h3">Заголовок 3</option>
+                <option value="h4">Заголовок 4</option>
+                <option value="h5">Заголовок 5</option>
+                <option value="h6">Заголовок 6</option>
+            </select>
+            <button id="alignLeftButton"><img src="../images/align-left.png" alt="" style="width: 16px; height: auto;" ></button>
+            <button id="alignCenterButton"><img src="../images/align-center.png" alt="" style="width: 16px; height: auto;" ></button>
+            <button id="alignRightButton"><img src="../images/right-align.png" alt="" style="width: 16px; height: auto;" ></button>
+            
+            <div class="wh-edit">
+                <input class="h" type="file" id="imageInput" accept="image/*">
+                <button id="insertImageButton">Вставить изображение</button>
+                <!-- Модальное окно для вставки изображения -->
+                <div id="imageModal" style="display: none;">
+                    <h2>Вставить изображение</h2>
+                    <div class="param">
+                    <label for="imageInput">Выберите изображение:<br /></label>
+                    <input type="file" id="imageInput" accept="image/*"><br>
+                    <label for="imageWidth">Ширина (px):</label>
+                    <input type="number" id="imageWidth" min="1" value="300"><br>
+                    <label for="imageHeight">Высота (px):</label>
+                    <input type="number" id="imageHeight" min="1" value="200"><br>
+                    <label for="imageCaption">Подпись:</label>
+                    <input type="text" id="imageCaption"><br>
+                    </div>
+                    <button id="insertImage">Вставить</button>
+                    <button id="closeImageModal">Закрыть</button>
+                </div>
+            </div>
+
+            <button id="saveButton"><img src="../images/Save.png" alt="" style="width: 16px; height: auto;" > Save</button>
+        </div>
+    
+        <div  contenteditable="true" id="editor">
+            <h2>Редактируйте текст здесь...</h2>
+            <p>Это пример редактора HTML.</p>
+        </div>
+    
+        <div id="output">
+            <h2>Output:</h2>
+            <button id="copyButton">Скопировать текст</button>
+            <button id="saveToFileButton">Сохранить в файл</button>
+            <pre id="htmlOutput"></pre>
+        </div>
+        <p align="center" style="font-size: 14px; line-height: 16px; font-style: italic;">Powered by <b>MARKONS</b></p>
+    </div>
+
+    <script>
+        const boldButton = document.getElementById('boldButton');
+        const italicButton = document.getElementById('italicButton');
+        const underlineButton = document.getElementById('underlineButton');
+        const headingSelector = document.getElementById('headingSelector');
+        const alignLeftButton = document.getElementById('alignLeftButton');
+        const alignCenterButton = document.getElementById('alignCenterButton');
+        const alignRightButton = document.getElementById('alignRightButton');
+        
+        const insertImageButton = document.getElementById('insertImageButton');
+        const imageModal = document.getElementById('imageModal');
+        const imageInput = document.getElementById('imageInput');
+        const imageWidthInput = document.getElementById('imageWidth');
+        const imageHeightInput = document.getElementById('imageHeight');
+        const imageCaptionInput = document.getElementById('imageCaption');
+        const insertImage = document.getElementById('insertImage');
+        const closeImageModal = document.getElementById('closeImageModal');
+
+        const saveButton = document.getElementById('saveButton');
+        const editor = document.getElementById('editor');
+        const htmlOutput = document.getElementById('htmlOutput');
+        const copyButton = document.getElementById('copyButton');
+        const saveToFileButton = document.getElementById('saveToFileButton');
+
+        boldButton.addEventListener('click', () => {
+            document.execCommand('bold', false, null);
+        });
+
+        italicButton.addEventListener('click', () => {
+            document.execCommand('italic', false, null);
+        });
+
+        underlineButton.addEventListener('click', () => {
+            document.execCommand('underline', false, null);
+        });
+
+        saveButton.addEventListener('click', () => {
+            const htmlContent = editor.innerHTML;
+            htmlOutput.textContent = htmlContent;
+        });
+
+        headingSelector.addEventListener('change', () => {
+            const selectedHeading = headingSelector.value;
+            document.execCommand('formatBlock', false, selectedHeading);
+        });
+
+        alignLeftButton.addEventListener('click', () => {
+            document.execCommand('justifyLeft', false, null);
+        });
+
+        alignCenterButton.addEventListener('click', () => {
+            document.execCommand('justifyCenter', false, null);
+        });
+
+        alignRightButton.addEventListener('click', () => {
+            document.execCommand('justifyRight', false, null);
+        });
+
+        
+        <!--111-->
+        insertImageButton.addEventListener('click', () => {
+            // Открываем модальное окно для вставки изображения
+            imageModal.style.display = 'block';
+        });
+
+        // Обработчик события для вставки изображения
+        insertImage.addEventListener('click', () => {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageUrl = e.target.result;
+                    const imageWidth = imageWidthInput.value;
+                    const imageHeight = imageHeightInput.value;
+                    const imageCaption = imageCaptionInput.value;
+
+                    // Создаем HTML-код для изображения с указанными параметрами и base64-кодированным изображением
+                    const imageHtml = `<img src="${imageUrl}" width="${imageWidth}" height="${imageHeight}" alt="${imageCaption}">`;
+
+                    // Вставляем HTML-код изображения в редактор
+                    document.execCommand('insertHTML', false, imageHtml);
+
+                    // Закрываем модальное окно
+                    imageModal.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Закрытие модального окна
+        closeImageModal.addEventListener('click', () => {
+            imageModal.style.display = 'none';
+        });
+        <!--1111-->
+
+        copyButton.addEventListener('click', () => {
+            const textToCopy = htmlOutput.textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Текст скопирован в буфер обмена.');
+        });
+
+        saveToFileButton.addEventListener('click', () => {
+            const textToSave = htmlOutput.textContent;
+            const blob = new Blob([textToSave], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'output.html';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+    </script>
+</body>
+</html>
