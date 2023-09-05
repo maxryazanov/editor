@@ -29,7 +29,6 @@
             <button id="alignRightButton"><img src="../images/right-align.png" alt="" style="width: 16px; height: auto;" ></button>
             
             <div class="wh-edit">
-                <input class="h" type="file" id="imageInput" accept="image/*">
                 <button id="insertImageButton">Вставить изображение</button>
                 <!-- Модальное окно для вставки изображения -->
                 <div id="imageModal" style="display: none;">
@@ -125,7 +124,6 @@
         });
 
         
-        <!--111-->
         insertImageButton.addEventListener('click', () => {
             // Открываем модальное окно для вставки изображения
             imageModal.style.display = 'block';
@@ -159,7 +157,7 @@
         closeImageModal.addEventListener('click', () => {
             imageModal.style.display = 'none';
         });
-        <!--1111-->
+       
 
         copyButton.addEventListener('click', () => {
             const textToCopy = htmlOutput.textContent;
